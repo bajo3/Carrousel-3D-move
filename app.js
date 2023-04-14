@@ -32,7 +32,7 @@ function init(delayTime) {
 
 function applyTransform(obj) {
     if (tY > 180) tY = 180;
-    if (tY < 0) Ty = 0;
+    if (tY < 0) tY = 0;
 
     obj.style.transform = "rotateX(" + (-tY) + "deg) rotateY(" + (tX) + "deg)";
 }
@@ -47,57 +47,57 @@ let sX, sY, nX, nY, desX = 0,
     tY = 10;
 
 if (autoRotate) {
-    let animationName = (rotateSpeed >0 ? 'spin' : 'spinRevert');
+    let animationName = (rotateSpeed > 0 ? 'spin' : 'spinRevert');
     ospin.style.animation = `${animationName} ${Math.abs(rotateSpeed)}
-     infinite linear `
+    s infinite linear `
 }
 
 document.onpointerdown = function (e) {
     clearInterval(odrag.timer);
     e = e || window.event;
     let sX = e.clientX,
-        sY = e.clientY
+        sY = e.clientY;
 
 
 
-this.onpointermove = function (e) {
-    e = e || window.event;
-    let nX = e.clientX,
-        nY = e.clientY;
+    this.onpointermove = function (e) {
+        e = e || window.event;
+        let nX = e.clientX,
+            nY = e.clientY;
 
-    desX = nX - sX;
-    desY = nY - sY;
-    tX += desX * 0.1;
-    tY += desY * 0.1;
+        desX = nX - sX;
+        desY = nY - sY;
+        tX += desX * 0.1;
+        tY += desY * 0.1;
 
-
-    applyTransform(odrag);
-    sX = nX;
-    sY = nY;
-}
-
-this.onpointerup = function (e) {
-    odrag.timer = setInterval(function () {
-        desX *= 0.95;
-        desY *= 0.95;
-        tX *= desX * 0.1;
-        tY *= desY * 0.1
 
         applyTransform(odrag);
+        sX = nX;
+        sY = nY;
+    }
 
-        playSpin(false);
+    this.onpointerup = function (e) {
+        odrag.timer = setInterval(function () {
+            desX *= 0.95;
+            desY *= 0.95;
+            tX *= desX * 0.1;
+            tY *= desY * 0.1
 
-        if(Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5){
-            clearInterval(odrag.timer);
-            playSpin(true);
-        }
+            applyTransform(odrag);
 
-    }, 170)
+            playSpin(false);
 
-    this.onpointermove = this.onpointerup = null;
+            if (Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5) {
+                clearInterval(odrag.timer);
+                playSpin(true);
+            }
 
-};
+        }, 17)
 
-return false;
+        this.onpointermove = this.onpointerup = null;
+
+    };
+
+    return false;
 }
 
