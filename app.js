@@ -1,33 +1,34 @@
+// Declare variables using const or let depending on if they need to be reassigned later
+const radius = 340;
+const autoRotate = true;
+const rotateSpeed = -60;
+const imgWidth = 190;
+const imgHeight = 230;
 
-let radius = 340;
-let autoRotate = true;
-let rotateSpeed = -60;
-let imgWidth = 190;
-let imgHeight = 230;
+// Call init function after the DOM has loaded
+window.addEventListener("load", () => {
+    setTimeout(init, 1000);
+});
 
-setTimeout(init, 1000);
+// Use const instead of let since these variables are not reassigned
+const odrag = document.getElementById("drag");
+const ospin = document.getElementById("spin");
+const aImg = ospin.getElementsByTagName("img");
+const aEle = [...aImg];
 
+ospin.style.width = `${imgWidth}px`;
+ospin.style.height = `${imgHeight}px`;
 
+const ground = document.getElementById("ground");
+ground.style.width = `${radius * 3}px`;
+ground.style.height = `${radius * 3}px`;
 
-let odrag = document.getElementById('drag');
-let ospin = document.getElementById('spin');
-let aImg = ospin.getElementsByTagName('img');
-
-let aEle = [...aImg];
-
-ospin.style.width = imgWidth + "px";
-ospin.style.height = imgHeight + "px";
-
-let ground = document.getElementById("ground");
-ground.style.width = radius * 3 + "px"
-ground.style.height = radius * 3 + "px"
-
-function init(delayTime) {
-    for (let i = 0; i < aEle.length; i++) {
-        aEle[i].style.transform = "rotateY(" + (i * (360 / aEle.length)) + "deg) translateZ(" + radius + "px)";
-        aEle[i].style.transition = "transform 1s";
-        aEle[i].style.transitionDelay = delayTime || (aEle.length - i) / 4 + "s";
-    }
+function init(delayTime = 0) {
+    aEle.forEach((ele, i) => {
+        ele.style.transform = `rotateY(${i * (360 / aEle.length)}deg) translateZ(${radius}px)`;
+        ele.style.transition = "transform 1s";
+        ele.style.transitionDelay = `${delayTime || (aEle.length - i) / 4}s`;
+    });
 }
 
 function applyTransform(obj) {
@@ -37,51 +38,52 @@ function applyTransform(obj) {
     obj.style.transform = "rotateX(" + (-tY) + "deg) rotateY(" + (tX) + "deg)";
 }
 
+
 function playSpin(yes) {
-    ospin.style.animationPlayState = (yes ? 'running' : 'paused');
+    ospin.style.animationPlayState = yes ? "running" : "paused";
 }
 
-let sX, sY, nX, nY, desX = 0,
+let sX = 0,
+    sY = 0,
+    desX = 0,
     desY = 0,
     tX = 0,
     tY = 10;
 
 if (autoRotate) {
-    let animationName = (rotateSpeed > 0 ? 'spin' : 'spinRevert');
-    ospin.style.animation = `${animationName} ${Math.abs(rotateSpeed)}
-    s infinite linear `
+    const animationName = rotateSpeed > 0 ? "spin" : "spinRevert";
+    ospin.style.animation = `${animationName} ${Math.abs(
+        rotateSpeed
+    )}s infinite linear`;
 }
 
 document.onpointerdown = function (e) {
     clearInterval(odrag.timer);
     e = e || window.event;
-    let sX = e.clientX,
-        sY = e.clientY;
+    sX = e.clientX;
+    sY = e.clientY;
 
-
-
-    this.onpointermove = function (e) {
+    document.onpointermove = function (e) {
         e = e || window.event;
-        let nX = e.clientX,
-            nY = e.clientY;
+        const nX = e.clientX;
+        const nY = e.clientY;
 
         desX = nX - sX;
         desY = nY - sY;
         tX += desX * 0.1;
         tY += desY * 0.1;
 
-
         applyTransform(odrag);
+
         sX = nX;
         sY = nY;
-    }
+    };
 
-    this.onpointerup = function (e) {
+    document.onpointerup = function (e) {
         odrag.timer = setInterval(function () {
             desX *= 0.95;
             desY *= 0.95;
-            tX *= desX * 0.1;
-            tY *= desY * 0.1
+            tX += desX * 0.1;
 
             applyTransform(odrag);
 
@@ -91,13 +93,11 @@ document.onpointerdown = function (e) {
                 clearInterval(odrag.timer);
                 playSpin(true);
             }
+        }, 17);
 
-        }, 17)
-
-        this.onpointermove = this.onpointerup = null;
-
+        document.onpointermove = null;
+        document.onpointerup = null;
     };
 
     return false;
-}
-
+};
